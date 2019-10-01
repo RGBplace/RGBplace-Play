@@ -1,23 +1,21 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
 
 Vue.use(Router)
 
+import Header from './components/Header'
+import Logo from './components/Logo'
+import ArrangeNumber from './components/ArrangeNumber'
+import TextReverse from './components/TextReverse'
+import Playground from './components/Playground'
+
+Vue.component('vue-header', Header);
+
 export default new Router({
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: Home
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
-    }
+    { path: '/logo', component: Logo },
+    { path: '/arrange-number', component: ArrangeNumber},
+    { path: '/text-reverse', component: TextReverse },
+    { path: '/playground', component: Playground }
   ]
 })
