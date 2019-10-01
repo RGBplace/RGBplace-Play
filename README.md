@@ -4,7 +4,7 @@
 
 ## Link
 
-<a href='https://about.rgbplace.com' target='_blank'>https://about.rgbplace.com</a>
+<a href='https://play.rgbplace.com' target='_blank'>https://play.rgbplace.com</a>
 
 ## Project setup
 ```
