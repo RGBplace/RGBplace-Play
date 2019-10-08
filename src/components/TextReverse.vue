@@ -1,9 +1,9 @@
 <template>
-    <div>
+    <div align="center">
         <p v-bind:title="message"> {{ message }} </p>
-        <input v-model="message" >
+        <v-text-field v-model="message"></v-text-field>
 
-        <button @click="reverseMessage">뒤집</button>
+        <v-btn color="blue darken-3" @click="reverseMessage">뒤집기</v-btn>
     </div>
 </template>
 

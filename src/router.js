@@ -3,13 +3,13 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-import Header from './components/Header'
+//import Header from './components/Header'
 import Logo from './components/Logo'
 import ArrangeNumber from './components/ArrangeNumber'
 import TextReverse from './components/TextReverse'
 import Playground from './components/Playground'
 
-Vue.component('vue-header', Header);
+//Vue.component('vue-header', Header);
 
 export default new Router({
   routes: [

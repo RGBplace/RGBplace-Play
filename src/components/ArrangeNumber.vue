@@ -58,7 +58,7 @@ let answerLayout = [];
 let testLayout = [];
 let numberStack = [];
 
-const MAX_MAP_SIZE = 7;
+const MAX_MAP_SIZE = 5;
 let mapSize = 2;
 
 let startSw = false;
@@ -262,7 +262,7 @@ export default {
 
 <style lang="scss" scoped>
 .vue-grid-frame {
-  width: 800px;
+  width: 700px;
   margin: auto;
 
   .vue-grid-item {
@@ -277,8 +277,10 @@ export default {
       font-size: 2rem;
       line-height: 7.5rem;
       user-select: none;
+      color: black;
 
       &:hover {
+        color: white;
         background-color: tomato;
       }
 
