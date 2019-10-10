@@ -36,7 +36,7 @@
             <v-icon>mdi-test-tube</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Playground</v-list-item-title>
+            <v-list-item-title>실험실</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -47,7 +47,7 @@
             clipped-left
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>
+      <v-toolbar-title @click="moveToLink()">
         <span class="r">R</span>
         <span class="g">G</span>
         <span class="b">B</span>
@@ -57,19 +57,7 @@
     </v-app-bar>
 
     <v-content>
-      <v-container
-              class="fill-height fill-width"
-              fluid
-      >
-        <v-row no-gutters
-                align="center"
-                justify="center"
-        >
-          <v-col class="shrink" cols="4" sm="4">
-            <router-view></router-view>
-          </v-col>
-        </v-row>
-      </v-container>
+      <router-view></router-view>
     </v-content>
 
     <v-footer app>
@@ -81,8 +69,12 @@
 <script>
     export default {
         methods: {
-            moveToLink: function (link) {
-                window.location.href = "/#" + link;
+            moveToLink: function (link = "") {
+                if(link) {
+                    window.location.href = "/#" + link;
+                } else {
+                    window.location.href = "/";
+                }
             }
         },
         props: {
@@ -98,5 +90,5 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "@/style/base.scss";
+
 </style>
