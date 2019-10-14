@@ -16,9 +16,9 @@
     </div>
     <div class="game-status">
       <span class="state">{{ stateTitle }}</span>
-      <span>: {{ totalTime }}</span>
-      <input type="button" value="첫 단계로" @click="first" />
-      <input type="button" :value="levelTitle" @click="next" />
+      <span class="ma-2">: {{ totalTime }}</span>
+      <v-btn small class="primary ma-2" @click="first">첫 단계로</v-btn>
+      <v-btn small class="primary ma-2" @click="next">{{levelTitle}}</v-btn>
     </div>
     <div class="vue-grid-frame">
       <grid-layout

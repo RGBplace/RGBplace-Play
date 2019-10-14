@@ -8,14 +8,17 @@ import Logo from './components/Logo'
 import ArrangeNumber from './components/ArrangeNumber'
 import TextReverse from './components/TextReverse'
 import Playground from './components/Playground'
+import Roulette from './components/Roulette'
 
 //Vue.component('vue-header', Header);
 
 export default new Router({
   routes: [
-    { path: '/logo', component: Logo },
-    { path: '/arrange-number', component: ArrangeNumber},
-    { path: '/text-reverse', component: TextReverse },
-    { path: '/playground', component: Playground }
+    {path: '/'},
+    { path: '/logo', component: Logo, meta: { title: 'Logo'} },
+    { path: '/arrange-number', component: ArrangeNumber, meta: { title: '카드 정렬'}},
+    { path: '/text-reverse', component: TextReverse, meta: { title: '문자열 뒤집기'} },
+    { path: '/playground', component: Playground, meta: { title: '실험실'} },
+    { path: '/roulette', component: Roulette, meta: { title: '룰렛'} }
   ]
 })

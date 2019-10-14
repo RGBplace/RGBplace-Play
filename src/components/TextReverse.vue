@@ -12,7 +12,7 @@
                 >
                     <v-textarea
                             v-model="message"
-                            auto-grow="true" ></v-textarea>
+                            auto-grow ></v-textarea>
 
                     <v-btn color="blue darken-3" @click="reverseMessage">뒤집기</v-btn>
                 </v-card>
