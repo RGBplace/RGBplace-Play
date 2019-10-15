@@ -1,23 +1,40 @@
 <template>
     <v-container fluid>
-        <canvas id="canvas" width="600" height="500"></canvas>
-        <v-btn color="primary" @click="rotate">rotate</v-btn>
+        <v-row no-gutters
+               align="center"
+               justify="center"
+        >
+            <v-col align="center">
+                <canvas id="canvas" width="350" height="350"></canvas>
+                <v-btn color="primary" @click="rotate">rotate</v-btn>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 
 <script>
+    //Use // eslint-disable-next-line to ignore the next line.
+    //Use /* eslint-disable */ to ignore all warnings in a file.
     /* eslint-disable */
+    const CANVAS_WIDTH = 350;
+    const CANVAS_HEIGHT = 350;
 
-    let centreX = 600/2;
-    let centreY = 500/2;
-    let radius = 200;
-    let rotateAngle = 51.4 * Math.PI / 180;
+    let pieSize = 51.4;
+    let piePieces = 7;
+
+    let centreX = CANVAS_WIDTH/2;
+    let centreY = CANVAS_HEIGHT/2;
+    let radius = 120;
+    let pieArray = [];
+    let rotateAngle = pieSize * Math.PI / 180;
     let startAngle = 0;
-    let endAngle = 51.4 * Math.PI / 180;
+    let endAngle = pieSize * Math.PI / 180;
 
     let colours = ["#BAF4EE", "#4ED4C6", "#BAF4EE", "#4ED4C6", "#BAF4EE", "#4ED4C6", "#FF6347"];
     let labels = ['당첨','꽝','당첨','꽝','당첨','꽝','벌칙'];
 
+    let currentAngle = 0;
+    let spin = 0;
     let counter = 0;
 
     export default {
@@ -30,16 +47,17 @@
                 let ctx = canvas.getContext("2d");
                 ctx.lineWidth = 3.0;
 
-                this.drawWheel(canvas);
+                this.draw(canvas);
+                //console.log("start pieArray : ", pieArray);
 
                 ctx.beginPath();
-                ctx.moveTo(centreX, centreY-210);
-                ctx.lineTo(centreX+10, centreY-240);
-                ctx.lineTo(centreX-10, centreY-240);
+                ctx.moveTo(centreX, centreY-125);
+                ctx.lineTo(centreX+10, centreY-140);
+                ctx.lineTo(centreX-10, centreY-140);
                 ctx.closePath();
 
                 // the outline
-                ctx.lineWidth = 5;
+                ctx.lineWidth = 1;
                 ctx.strokeStyle = '#666666';
                 ctx.stroke();
 
@@ -47,14 +65,23 @@
                 ctx.fillStyle = "#FFCC00";
                 ctx.fill();
             },
-            drawWheel() {
+            draw() {
                 let canvas = this.$el.querySelector('#canvas');
                 let ctx = canvas.getContext("2d");
 
-                for (let i = 0; i < 7; i++) {
+                for (let i = 0; i < piePieces; i++) {
                     ctx.fillStyle = colours[i];
                     ctx.translate(centreX, centreY);
                     ctx.rotate(rotateAngle);
+
+                    // if(typeof pieArray[i] !== 'object') {
+                    //     pieArray[i] = {
+                    //         labels: labels[i],
+                    //         degreeStart: (rotateAngle * ((i + 1) % piePieces)) * (180 / Math.PI) % 360,
+                    //         degreeEnd: (rotateAngle * ((i + 2) % piePieces)) * (180 / Math.PI) % 360
+                    //     };
+                    // }
+
                     ctx.translate(-centreX, -centreY);
                     ctx.beginPath();
                     ctx.moveTo(centreX, centreY);
@@ -65,38 +92,57 @@
                     ctx.save();
 
                     ctx.fillStyle = "black";
-                    ctx.font = "15px verdana";
+                    ctx.font = "14px Lucida Sans Unicode";
                     ctx.translate(centreX, centreY);
-                    ctx.rotate(115*Math.PI/180);
+                    ctx.rotate(120*Math.PI/180);
                     ctx.translate(-centreX, -centreY);
-                    ctx.fillText(labels[i], centreX-15, centreY-160);
+                    ctx.fillText(labels[i], centreX-20, centreY-100);
                     ctx.restore();
                 }
             },
-            rotate(event, round) {
-                if(!round) round = Math.ceil(Math.random() * 50)+100;
+            rotate() {
+                if(spin === 0) {
+                    spin = Math.ceil(Math.random() * 50)+100;
+                    // spin = 1;
+                    currentAngle = spin*10;
+                }
 
                 let canvas = this.$el.querySelector('#canvas');
-
                 let ctx = canvas.getContext("2d");
                 ctx.translate(centreX, centreY);
-                ctx.rotate(1);
+                ctx.rotate( (10 * Math.PI/180) % 360 );
                 ctx.translate(-centreX, -centreY);
 
+                // for (let i = 0; i < piePieces; i++) {
+                //     pieArray[i].degreeStart = (currentAngle + pieArray[i].degreeStart) % 360;
+                //     pieArray[i].degreeEnd = (currentAngle + pieArray[i].degreeEnd) % 360;
+                // }
+
                 counter++;
-                if(counter < round) {
-                    this.drawWheel();
+                if(counter < spin) {
+                    this.draw();
                     requestAnimationFrame(this.rotate);
                 } else {
                     counter = 0;
+                    spin = 0;
+
+                    // console.log("angle : " + currentAngle);
+                    // console.log("end pieArray : ", pieArray);
+
+                    this.draw();
+                    //this.check();
                 }
 
-            }
+            },
+            // check() {
+            //     for (let i = 0; i < piePieces; i++) {
+            //         if (pieArray[i].degreeStart <= 270 && 270 <= pieArray[i].degreeEnd) {
+            //             console.log(pieArray[i].labels);
+            //         }
+            //     }
+            // },
         },
         mounted() {
-            //Use // eslint-disable-next-line to ignore the next line.
-            //Use /* eslint-disable */ to ignore all warnings in a file.
-
             this.init();
         },
         name: "roulette"
@@ -104,4 +150,7 @@
 </script>
 
 <style lang="scss" scoped>
+    canvas {
+        /*border : 1px solid white;*/
+    }
 </style>
