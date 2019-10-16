@@ -14,7 +14,7 @@ import Roulette from './components/Roulette'
 
 export default new Router({
   routes: [
-    {path: '/'},
+    { path: '/', component: () => import(/* webpackChunkName: "Home" */ './views/Home.vue') },
     { path: '/logo', component: Logo, meta: { title: 'Logo'} },
     { path: '/arrange-number', component: ArrangeNumber, meta: { title: '카드 정렬'}},
     { path: '/text-reverse', component: TextReverse, meta: { title: '문자열 뒤집기'} },
