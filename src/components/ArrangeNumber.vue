@@ -198,7 +198,7 @@ export default {
     next: function() {
       if (this.stateTitle === "끝") {
         if (mapSize >= MAX_MAP_SIZE) {
-          alert("Winner Winner Checkin Dinner!\n 총 시간 : " + this.totalTime + " 초");
+          alert("Winner Winner Chicken Dinner!");
           event.preventDefault();
           return;
         }
