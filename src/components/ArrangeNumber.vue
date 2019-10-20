@@ -24,7 +24,7 @@
       <grid-layout
         :layout.sync="layout"
         :col-num="colSize"
-        :row-height="50"
+        :row-height="40"
         :is-draggable="true"
         :is-resizable="false"
         :is-mirrored="false"
@@ -209,7 +209,7 @@ export default {
     },
     changeEvent: function(event) {
       // console.log(event.target);
-      // console.log(event.target.parentElement.getAttribute("data-idx"));
+      // console.logg(event.target.parentElement.getAttribute("data-idx"));
 
       if (!startSw) {
         startSw = true;
@@ -262,7 +262,8 @@ export default {
 
 <style lang="scss" scoped>
 .vue-grid-frame {
-  width: 700px;
+  width: 100%;
+  max-width: 750px;
   margin: auto;
 
   .vue-grid-item {
@@ -275,7 +276,7 @@ export default {
       height: 100%;
       text-align: center;
       font-size: 2rem;
-      line-height: 7.5rem;
+      line-height: 6rem;
       user-select: none;
       color: black;
 
