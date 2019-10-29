@@ -29,7 +29,7 @@
                                 <v-col class="text--secondary">
                                     <v-fade-transition leave-absolute>
                                         <span v-if="open" key="0">
-                                            Default : 3s, Current : {{setting.interval}}s
+                                            Default : 5s, Current : {{setting.interval}}s
                                         </span>
                                         <span v-else key="1">
                                             Time Interval : {{setting.interval}}s
@@ -76,7 +76,7 @@
 
         <v-row>
             <v-col class="mr-1">
-                <v-btn block color="blue-grey" dark @click="download">Download</v-btn>
+                <v-btn block color="blue-grey" dark @click="start">Download</v-btn>
             </v-col>
             <v-col class="ml-1">
                 <v-btn block color="deep-orange darken-1" dark @click="stop">Stop</v-btn>
@@ -86,9 +86,9 @@
         <v-row>
             <v-col>
                 <v-btn
-                        block
-                        color="primary"
-                        @click="expand = !expand"
+                    block
+                    color="primary"
+                    @click="expand = !expand"
                 >
                     List of All (500 Lists)
                 </v-btn>
@@ -98,9 +98,10 @@
             <v-col>
                 <v-expand-transition>
                     <v-textarea id="download_list" placeholder="Input Download list .."
-                                v-show="expand"
-                                outlined
-                                value="https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../001.%20%20Bob%20Dylan%20-%20Like%20A%20Rolling%20Stone%20-%201965.mp3
+                        v-show="expand"
+                        rows="30"
+                        outlined
+                        value="https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../001.%20%20Bob%20Dylan%20-%20Like%20A%20Rolling%20Stone%20-%201965.mp3
 https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../002.%20%20The%20Rolling%20Stones%20-%20Satisfaction%20-%201965.mp3
 https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../003.%20%20John%20Lennon%20-%20Imagine%20-%201971.mp3
 https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../004.%20%20Marvin%20Gaye%20-%20What%27s%20Going%20On%20-%201971.mp3
@@ -606,10 +607,12 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                 </v-expand-transition>
             </v-col>
         </v-row>
+        <iframe id="download_iframe" style="display:none;"></iframe>
     </v-container>
 </template>
 
 <script>
+    /* eslint-disable */
     import { mask } from 'vue-the-mask'
 
     export default {
@@ -632,7 +635,7 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                 },
                 downloadList : null,
                 downloadLoop : null,
-                downloadLine : 0,
+                currentLine : 0,
             }
         },
         methods: {
@@ -643,13 +646,39 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
             save() {
                 this.setting.interval = this.setting.userInterval;
             },
-            download() {
-                for (let i = this.downloadLine; i < 2; i++) {
-                    console.log(this.downloadList);
-                }
+            start() {
+                if(this.downloadList.value.split("\n").length == this.currentLine) return false;
+
+                this.download(this.downloadList.value.split("\n")[this.currentLine]);
+                this.downloadLoop = setInterval(() => {
+                    this.currentLine++;
+                    this.download(this.downloadList.value.split("\n")[this.currentLine]);
+                },this.setting.interval * 1000);
             },
             stop() {
                 clearInterval(this.downloadLoop);
+                console.log("stop : ", this.currentLine+1);
+            },
+            download(url) {
+                console.log("download Line : ", this.currentLine+1);
+                console.log(url);
+                
+                var myRegexp = new RegExp(/[A-Za-z0-9_%:.-\s]+.mp3/, "g");
+                let fileName = myRegexp.exec(url)[0].replace(/\%20/gi, "");
+                console.log(fileName);
+
+                this.axios({
+                  url: url,
+                    method: 'GET',
+                    responseType: 'blob', // important
+                }).then((response) => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', fileName); //or any other extension
+                    document.body.appendChild(link);
+                    link.click();
+                });
             }
         },
         mounted : function() {
