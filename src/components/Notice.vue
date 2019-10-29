@@ -1,12 +1,12 @@
 <template>
   <v-container
     fluid
+    style="max-width:600px"
   >
     <v-row no-gutters>
       <v-col>
         <v-card
                 class="mx-auto ma-5"
-                width="600"
         >
           <v-list-item>
             <v-list-item-content>
@@ -21,7 +21,6 @@
       <v-col>
         <v-card
                 class="mx-auto ma-1"
-                width="600"
         >
           <v-subheader>2019/10/15</v-subheader>
           <v-list-item>
@@ -43,7 +42,6 @@
       <v-col>
         <v-card
                 class="mx-auto ma-1"
-                width="600"
         >
           <v-subheader>2019/10/01</v-subheader>
           <v-list-item>

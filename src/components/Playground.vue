@@ -23,6 +23,8 @@
                 {{ key }} : {{ value }}
             </li>
         </ol>
+
+        <a href="https://materialdesignicons.com/">mdi 아이콘 검색</a>
     </div>
 </template>
 

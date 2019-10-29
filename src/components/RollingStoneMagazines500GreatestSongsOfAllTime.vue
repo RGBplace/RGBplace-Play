@@ -1,0 +1,664 @@
+<template>
+    <v-container
+            fluid
+            style="max-width:600px"
+    >
+        <v-row no-gutters>
+            <v-col>
+                <v-card
+                    class="mx-auto ma-5"
+                >
+                    <v-list-item>
+                        <v-list-item-content>
+                            <v-list-item-title class="title font-italic font-weight-light mb-1">Rolling Stone Magazine's 500 greatest songs of all time...</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-card>
+            </v-col>
+        </v-row>
+
+        <v-row no-gutters>
+            <v-col>
+                <v-expansion-panels
+                        class="mx-auto mb-2"
+                >
+                    <v-expansion-panel>
+                        <v-expansion-panel-header v-slot="{ open }">
+                            <v-row no-gutters>
+                                <v-col cols="4">Setting</v-col>
+                                <v-col class="text--secondary">
+                                    <v-fade-transition leave-absolute>
+                                        <span v-if="open" key="0">
+                                            Default : 3s, Current : {{setting.interval}}s
+                                        </span>
+                                        <span v-else key="1">
+                                            Time Interval : {{setting.interval}}s
+                                        </span>
+                                    </v-fade-transition>
+                                </v-col>
+                            </v-row>
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <v-row no-gutters>
+                                <v-col>
+                                    <v-text-field
+                                        label="Time Interval"
+                                        suffix="s"
+                                        v-mask="customMask"
+                                        value="3"
+                                        v-model="setting.userInterval"
+                                    ></v-text-field>
+                                </v-col>
+                            </v-row>
+
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                    text
+                                    color="primary"
+                                    @click="cancel"
+                                >
+                                    Cancel
+                                </v-btn>
+                                <v-btn
+                                    text
+                                    color="primary"
+                                    @click="save"
+                                >
+                                    Save
+                                </v-btn>
+                            </v-card-actions>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+            </v-col>
+        </v-row>
+
+        <v-row>
+            <v-col class="mr-1">
+                <v-btn block color="blue-grey" dark @click="download">Download</v-btn>
+            </v-col>
+            <v-col class="ml-1">
+                <v-btn block color="deep-orange darken-1" dark @click="stop">Stop</v-btn>
+            </v-col>
+        </v-row>
+
+        <v-row>
+            <v-col>
+                <v-btn
+                        block
+                        color="primary"
+                        @click="expand = !expand"
+                >
+                    List of All (500 Lists)
+                </v-btn>
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col>
+                <v-expand-transition>
+                    <v-textarea id="download_list" placeholder="Input Download list .."
+                                v-show="expand"
+                                outlined
+                                value="https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../001.%20%20Bob%20Dylan%20-%20Like%20A%20Rolling%20Stone%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../002.%20%20The%20Rolling%20Stones%20-%20Satisfaction%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../003.%20%20John%20Lennon%20-%20Imagine%20-%201971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../004.%20%20Marvin%20Gaye%20-%20What%27s%20Going%20On%20-%201971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../005.%20%20Aretha%20Franklin%20-%20Respect%20-%201967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../006.%20%20The%20Beach%20Boys%20-%20Good%20Vibrations%20-%201966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../007.%20%20Chuck%20Berry%20-%20Johnny%20B.%20Goode%20-%201958.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../008.%20%20The%20Beatles%20-%20Hey%20Jude%20-%201968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../009.%20%20Nirvana%20-%20Smells%20Like%20Teen%20Spirit%20-%201991.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../010.%20%20Ray%20Charles%20-%20What%27d%20I%20Say%20-%201959.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../011.%20%20The%20Who%20-%20My%20Generation%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../012.%20%20Sam%20Cooke%20-%20A%20Change%20Is%20Gonna%20Come%20-%201964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../013.%20%20The%20Beatles%20-%20Yesterday%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../014.%20%20Bob%20Dylan%20-%20Blowin%27%20In%20The%20Wind%20-%201963.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../015.%20%20The%20Clash%20-%20London%20Calling%20-%201980.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../016.%20%20The%20Beatles%20-%20I%20Want%20To%20Hold%20Your%20Hand%20-%201963.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../017.%20%20Jimi%20Hendrix%20-%20Purple%20Haze%20-%201967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../018.%20%20Chuck%20Berry%20-%20Maybellene%20-%201955.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../019.%20%20Elvis%20Presley%20-%20Hound%20Dog%20-%201956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../020.%20%20The%20Beatles%20-%20Let%20It%20Be%20-%201970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../021.%20%20Bruce%20Springsteen%20-%20Born%20To%20Run%20-%201975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../022.%20%20The%20Ronettes%20-%20Be%20My%20Baby%20-%201963.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../023.%20%20The%20Beatles%20-%20In%20My%20Life%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../024.%20%20The%20Impressions%20-%20People%20Get%20Ready%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../025.%20%20The%20Beach%20Boys%20-%20God%20Only%20Knows%20-%201966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../026.%20%20The%20Beatles%20-%20A%20Day%20In%20The%20Life%20-%201967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../027.%20%20Derek%20%26%20The%20Dominos%20-%20Layla%20-%201970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../028.%20%20Otis%20Redding%20-%20%28Sittin%27%20On%29%20The%20Dock%20Of%20The%20Bay%20-%201968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../029.%20%20The%20Beatles%20-%20Help%21%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../030.%20%20Johnny%20Cash%20-%20I%20Walk%20The%20Line%20-%201956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../031.%20%20Led%20Zeppelin%20-%20Stairway%20to%20Heaven%20-%201971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../032.%20%20The%20Rolling%20Stones%20-%20Sympathy%20For%20The%20Devil%20-%201968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../033.%20%20Ike%20%26%20Tina%20Turner%20-%20River%20Deep%20Mountain%20High%20-%201966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../034.%20%20The%20Righteous%20Brothers%20-%20You%27ve%20Lost%20That%20Lovin%27%20Feeling%20-%201964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../035.%20%20The%20Doors%20-%20Light%20My%20Fire%20-%201967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../036.%20%20U2%20-%20One%20-%201991.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../037.%20%20Bob%20Marley%20%26%20The%20Wailers%20-%20No%20Woman%2C%20No%20Cry%20-%201975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../038.%20%20The%20Rolling%20Stones%20-%20Gimme%20Shelter%20-%201969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../039.%20%20Buddy%20Holly%20%26%20The%20Crickets%20-%20That%27ll%20Be%20The%20Day%20-%201957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../040.%20%20Martha%20Reeves%20%26%20The%20Vandellas%20-%20Dancing%20In%20The%20Street%20-%201964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../041.%20%20The%20Band%20-%20The%20Weight%20-%201968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../042.%20%20The%20Kinks%20-%20Waterloo%20Sunset%20-%201968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../043.%20%20Little%20Richard%20-%20Tutti%20Frutti%20-%201955.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../044.%20%20Ray%20Charles%20-%20Georgia%20On%20My%20Mind%20-%201960.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../045.%20%20Elvis%20Presley%20-%20Heartbreak%20Hotel%20-%201956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../046.%20%20David%20Bowie%20-%20Heroes%20-%201977.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../047.%20%20Simon%20%26%20Garfunkel%20-%20Bridge%20Over%20Troubled%20Water%20-%201970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../047.SimonGarfunkel-BridgeOverTroubledWater-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../048.%20%20Jimi%20Hendrix%20-%20All%20Along%20The%20Watchtower%20-%201968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../049.%20%20The%20Eagles%20-%20Hotel%20California%20-%201976.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../050.%20%20Smokey%20Robinson%20%26%20The%20Miracles%20-%20The%20Tracks%20Of%20My%20Tears%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../051.%20%20Grandmaster%20Flash%20%26%20The%20Furious%20Five%20-%20The%20Message%20-%201982.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../052.%20%20Prince%20%26%20The%20Revolution%20-%20When%20Doves%20Cry%20-%201984.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../053.%20%20The%20Sex%20Pistols%20-%20Anarchy%20In%20The%20U.K.%20-%201977.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../054.%20%20Percy%20Sledge%20-%20When%20A%20Man%20Loves%20A%20Woman%20-%201966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../055.%20%20The%20Kingsmen%20-%20Louie%20Louie%20-%201963.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../056.%20%20Little%20Richard%20-%20Long%20Tall%20Sally%20-%201956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../057.%20%20Procol%20Harum%20-%20A%20Whiter%20Shade%20Of%20Pale%20-%201967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../058.%20%20Michael%20Jackson%20-%20Billie%20Jean%20-%201983.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../059.%20%20Bob%20Dylan%20-%20The%20Times%20They%20Are%20A-Changin%27%20-%201964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../060.%20%20Al%20Green%20-%20Let%27s%20Stay%20Together%20-%201971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../062.%20%20Bo%20Diddley%20-%20Bo%20Diddley%20-%201955.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../063.%20%20Buffalo%20Springfield%20-%20For%20What%20It%27s%20Worth%20-%201967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../064.%20%20The%20Beatles%20-%20She%20Loves%20You%20-%201963.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../065.%20%20Cream%20-%20Sunshine%20Of%20Your%20Love%20-%201968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../066.%20%20Bob%20Marley%20%26%20The%20Wailers%20-%20Redemption%20Song%20-%201980.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../067.%20%20Elvis%20Presley%20-%20Jailhouse%20Rock%20-%201957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../068.%20%20Bob%20Dylan%20-%20Tangled%20Up%20In%20Blue%20-%201975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../069.%20%20Roy%20Orbison%20-%20Crying%20-%201961.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../070.%20%20Dionne%20Warwick%20-%20Walk%20On%20By%20-%201964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../071.%20%20The%20Beach%20Boys%20-%20California%20Girls%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../072.%20%20James%20Brown%20-%20Papa%27s%20Got%20A%20Brand%20New%20Bag%20-%201966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../073.%20%20Eddie%20Cochran%20-%20Summertime%20Blues%20-%201958.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../074.%20%20Stevie%20Wonder%20-%20Superstition%20-%201972.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../075.%20%20Led%20Zeppelin%20-%20Whole%20Lotta%20Love%20-%201969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../076.%20%20The%20Beatles%20-%20Strawberry%20Fields%20Forever%20-%201967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../077.%20%20Elvis%20Presley%20-%20Mystery%20Train%20-%201955.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../078.%20%20James%20Brown%20-%20I%20Got%20You%20%28I%20Feel%20Good%29%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../079.%20%20The%20Byrds%20-%20Mr.%20Tambourine%20Man%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../080.%20%20Marvin%20Gaye%20-%20I%20Heard%20It%20Through%20The%20Grapevine%20-%201968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../081.%20%20Fats%20Domino%20-%20Blueberry%20Hill%20-%201956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../082.%20%20The%20Kinks%20-%20You%20Really%20Got%20Me%20-%201964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../083.%20%20The%20Beatles%20-%20Norwegian%20Wood%20%28This%20Bird%20Has%20Flown%29%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../084.%20%20The%20Police%20-%20Every%20Breath%20You%20Take%20-%201983.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../085.%20%20Patsy%20Cline%20-%20Crazy%20-%201961.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../086.%20%20Bruce%20Springsteen%20-%20Thunder%20Road%20-%201975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../087.%20%20Johnny%20Cash%20-%20Ring%20Of%20Fire%20-%201963.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../088.%20%20The%20Temptations%20-%20My%20Girl%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../089.%20%20The%20Mamas%20%26%20The%20Papas%20-%20California%20Dreamin%27%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../090.%20%20The%20Five%20Satins%20-%20In%20The%20Still%20Of%20The%20Night%20-%201956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../091.%20%20Elvis%20Presley%20-%20Suspicious%20Minds%20-%201969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../092.%20%20The%20Ramones%20-%20Blitzkrieg%20Bop%20-%201976.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../093.%20%20U2%20-%20I%20Still%20Haven%27t%20Found%20What%20I%27m%20Looking%20For%20-%201987.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../094.%20%20Little%20Richard%20-%20Good%20Golly%20Miss%20Molly%20-%201958.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../095.%20%20Carl%20Perkins%20-%20Blue%20Suede%20Shoes%20-%201956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../096.%20%20Jerry%20Lee%20Lewis%20-%20Great%20Balls%20Of%20Fire%20-%201957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../097.%20%20Chuck%20Berry%20-%20Roll%20Over%20Beethoven%20-%201956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../098.%20%20Al%20Green%20-%20Love%20And%20Happiness%20-%201972.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../099.%20%20Creedence%20Clearwater%20Revival%20-%20Fortunate%20Son%20-%201969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../100.%20%20The%20Rolling%20Stones%20-%20You%20Can%27t%20Always%20Get%20What%20You%20Want%20-%201969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../101.%20%20Jimi%20Hendrix%20-%20Voodoo%20Child%20%28Slight%20Return%29%20-%201968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../102.%20%20Gene%20Vincent%20-%20Be-Bop-A-Lula%20-%201956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../103.%20%20Donna%20Summer%20-%20Hot%20Stuff%20-%201979.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../104.%20%20Stevie%20Wonder%20-%20Living%20For%20The%20City%20-%201973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../105.%20%20Simon%20%26%20Garfunkel%20-%20The%20Boxer%20-%201969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../106.%20%20Bob%20Dylan%20-%20Mr.%20Tambourine%20Man%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../107.%20%20Buddy%20Holly%20-%20Not%20Fade%20Away%20-%201957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../108.%20%20Prince%20-%20Little%20Red%20Corvette%20-%201983.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../109.%20%20Van%20Morrison%20-%20Brown%20Eyed%20Girl%20-%201967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../110.%20%20Otis%20Redding%20-%20I%27ve%20Been%20Loving%20You%20Too%20Long%20%28To%20Stop%20Now%29%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../111.%20%20Hank%20Williams%20-%20I%27m%20So%20Lonesome%20I%20Could%20Cry%20-%201949.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../112.%20%20Elvis%20Presley%20-%20That%27s%20All%20Right%20-%201954.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../113.%20%20The%20Drifters%20-%20Up%20On%20the%20Roof%20-%201962.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../114.%20%20The%20Crystals%20-%20Da%20Doo%20Ron%20Ron%20%28When%20He%20Walked%20Me%20Home%29%20-%201963.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../115.%20%20Sam%20Cooke%20-%20You%20Send%20Me%20-%201957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../116.%20%20The%20Rolling%20Stones%20-%20Honky%20Tonk%20Women%20-%201969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../117.%20%20Al%20Green%20-%20Take%20Me%20to%20the%20River%20-%201974.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../118.%20%20The%20Isley%20Brothers%20-%20Shout%20%28Parts%201%20And%202%29%20-%201959.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../119.%20%20Fleetwood%20Mac%20-%20Go%20Your%20Own%20Way%20-%201977.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../120.%20%20The%20Jackson%205%20-%20I%20Want%20You%20Back%20-%201969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../121.%20%20Ben%20E.%20King%20-%20Stand%20By%20Me%20-%201961.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../122.%20%20The%20Animals%20-%20The%20House%20Of%20The%20Rising%20Sun%20-%201964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../123.%20%20James%20Brown%20-%20It%27s%20A%20Man%27s%20Man%27s%20Man%27s%20World%20-%201966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../124.%20%20The%20Rolling%20Stones%20-%20Jumpin%27%20Jack%20Flash%20-%201968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../125.%20%20The%20Shirelles%20-%20Will%20You%20Love%20Me%20Tomorrow%20-%201960.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../126.%20%20Big%20Joe%20Turner%20-%20Shake%2C%20Rattle%20And%20Roll%20-%201954.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../127.%20%20David%20Bowie%20-%20Changes%20-%201971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../128.%20%20Chuck%20Berry%20-%20Rock%20And%20Roll%20Music%20-%201957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../129.%20%20Steppenwolf%20-%20Born%20To%20Be%20Wild%20-%201968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../130.%20%20Rod%20Stewart%20-%20Maggie%20May%20-%201971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../131.%20%20U2%20-%20With%20Or%20Without%20You%20-%201987.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../132.%20%20Bo%20Diddley%20-%20Who%20Do%20You%20Love%20-%201957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../133.%20%20The%20Who%20-%20Won%27t%20Get%20Fooled%20Again%20-%201971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../134.%20%20Wilson%20Pickett%20-%20In%20The%20Midnight%20Hour%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../135.%20%20The%20Beatles%20-%20While%20My%20Guitar%20Gently%20Weeps%20-%201968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../136.%20%20Elton%20John%20-%20Your%20Song%20-%201970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../137.%20%20The%20Beatles%20-%20Eleanor%20Rigby%20-%201966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../138.%20%20Sly%20%26%20The%20Family%20Stone%20-%20Family%20Affair%20-%201971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../139.%20%20The%20Beatles%20-%20I%20Saw%20Her%20Standing%20There%20-%201964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../140.%20%20Led%20Zeppelin%20-%20Kashmir%20-%201975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../141.%20%20The%20Everly%20Brothers%20-%20All%20I%20Have%20To%20Do%20Is%20Dream%20-%201958.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../142.%20%20James%20Brown%20-%20Please%20Please%20Please%20-%201956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../143.%20%20Prince%20%26%20The%20Revolution%20-%20Purple%20Rain%20-%201984.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../144.%20%20The%20Ramones%20-%20I%20Wanna%20Be%20Sedated%20-%201978.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../145.%20%20Sly%20%26%20The%20Family%20Stone%20-%20Everyday%20People%20-%201968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../146.%20%20The%20B-52%27s%20-%20Rock%20Lobster%20-%201979.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../147.%20%20Iggy%20Pop%20-%20Lust%20For%20Life%20-%201977.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../148.%20%20Janis%20Joplin%20-%20Me%20%26%20Bobby%20McGee%20-%201971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../149.%20%20The%20Everly%20Brothers%20-%20Cathy%27s%20Clown%20-%201960.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../150.%20%20The%20Byrds%20-%20Eight%20Miles%20High%20-%201966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../151.%20%20The%20Penguins%20-%20Earth%20Angel%20%28Will%20You%20Be%20Mine%29%20-%201954.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../152.%20%20The%20Jimi%20Hendrix%20Experience%20-%20Foxey%20Lady%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../153.%20%20The%20Beatles%20-%20A%20Hard%20Day%27s%20Night%20-%201964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../154.%20%20Buddy%20Holly%20%26%20The%20Crickets%20-%20Rave%20On%20-%201958.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../155.%20%20Creedence%20Clearwater%20Revival%20-%20Proud%20Mary%20-%201969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../156.%20%20Simon%20%26%20Garfunkel%20-%20The%20Sounds%20Of%20Silence%20-%201965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../157.%20%20The%20Flamingos%20-%20I%20Only%20Have%20Eyes%20For%20You%20-%201959.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../158.%20%20Bill%20Haley%20%26%20His%20Comets%20-%20%28We%27re%20Gonna%29%20Rock%20Around%20The%20Clock%20-%201954.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../159.%20%20The%20Velvet%20Underground%20-%20I%27m%20Waiting%20For%20The%20Man%20-%201967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../160.%20%20Public%20Enemy%20-%20Bring%20The%20Noise%20-%201988.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../160.PublicEnemy-BringTheNoise-1988.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../161.%20%20Ray%20Charles%20-%20I%20Can%27t%20Stop%20Loving%20You%20-%201962.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../161.RayCharles-ICantStopLovingYou-1962.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../162.SineadOconnor-NothingCompares2U-1990.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../163.Queen-BohemianRhapsody-1975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../164.JohnnyCash-FolsomPrisonBlues-1956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../165.TracyChapman-FastCar-1988.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../166.Eminem-LoseYourself-2002.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../167.MarvinGaye-LetsGetItOn-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../168.TheTemptations-PapaWasARollingStone-1972.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../169.Rem-LosingMyReligion-1991.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../170.JoniMitchell-BothSidesNow-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../171.Abba-DancingQueen-1976.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../172.Aerosmith-DreamOn-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../173.TheSexPistols-GodSaveTheQueen-1977.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../174.TheRollingStones-PaintItBlack-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../175.TheBobbyFullerFour-IFoughtTheLaw-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../176.TheBeachBoys-DontWorryBaby-1964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../177.TomPetty-FreeFallin-1989.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../178.BigStar-SeptemberGurls-1974.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../179.JoyDivision-LoveWillTearUsApart-1980.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../180.Outkast-HeyYa-2003.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../181.BookerT.TheMgs-GreenOnions-1962.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../182.TheDrifters-SaveTheLastDanceForMe-1960.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../183.B.b.King-TheThrillIsGone-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../184.TheBeatles-PleasePleaseMe-1964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../185.BobDylan-DesolationRow-1963.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../186.ArethaFranklin-INeverLovedAMantheWayILoveYou-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../187.Acdc-BackInBlack-1980.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../188.CreedenceClearwaterRevival-WhollStopTheRain-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../189.TheBeeGees-StayinAlive-1977.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../190.BobDylan-KnockinOnHeavensDoor-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../191.LynyrdSkynyrd-FreeBird-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../192.GlenCampbell-WichitaLineman-1968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../193.TheDrifters-ThereGoesMyBaby-1959.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../194.BuddyHolly-PeggySue-1957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../195.TheChantels-Maybe-1957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../196.GunsNRoses-SweetChildOMine-1987.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../197.ElvisPresley-DontBeCruel-1956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../198.JimiHendrix-HeyJoe-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../199.Parliament-FlashLight-1977.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../200.Beck-Loser-1993.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../201.NewOrder-BizarreLoveTriangle-1986.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../202.TheBeatles-ComeTogether-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../203.BobDylan-Positively4thStreet-1965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../204.OtisRedding-TryALittleTenderness-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../205.BillWithers-LeanOnMe-1972.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../206.TheFourTops-ReachOutIllBeThere-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../207.TheEverlyBrothers-ByeByeLove-1957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../208.Them-Gloria-1965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../209.TheBeachBoys-InMyRoom-1963.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../210.QuestionMarkTheMysterians-96Tears-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../211.TheBeachBoys-CarolineNo-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../212.Prince-1999-1982.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../213.HankWilliams-YourCheatinHeart-1953.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../214.NeilYoung-RockinInTheFreeWorld-1989.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../215.TheChords-Sh-boom-1954.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../216.TheLovinSpoonful-DoYouBelieveInMagic-1965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../217.DollyParton-Jolene-1974.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../218.JohnLeeHooker-BoomBoom-1962.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../219.HowlinWolf-Spoonful-1960.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../220.TheLeftBanke-WalkAwayRenee-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../221.LouReed-WalkOnTheWildSide-1972.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../222.RoyOrbison-OhPrettyWoman-1964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../223.SlyTheFamilyStone-DanceToTheMusic-1968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../224.Chic-GoodTimes-1979.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../225.MuddyWaters-HoochieCoochieMan-1954.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../226.VanMorrison-Moondance-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../227.JamesTaylor-FireAndRain-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../228.TheClash-ShouldIStayOrShouldIGo-1982.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../229.MuddyWaters-MannishBoy-1955.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../230.BobDylan-JustLikeAWoman-1980.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../231.MarvinGaye-SexualHealing-1982.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../232.RoyOrbison-OnlyTheLonely-1960.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../233.TheAnimals-WeGottaGetOutOfThisPlace-1965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../234.TheByrds-IllFeelAWholeLotBetter-1965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../235.RayCharles-IGotAWoman-1954.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../236.BuddyHolly-Everyday-1957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../237.AfrikaBambaataaTheSoulSonicForce-PlanetRock-1982.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../238.PatsyCline-IFallToPieces-1961.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../239.Dion-TheWanderer-1961.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../240.DustySpringfield-SonOfAPreacherMan-1968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../241.SlyTheFamilyStone-Stand-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../242.EltonJohn-RocketMan-1972.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../243.TheB-52s-LoveShack-1989.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../244.TheSpencerDavisGroup-GimmeSomeLovin-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../245.TheBand-TheNightTheyDroveOldDixieDown-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../246.JackieWilson-yourLoveKeepsLiftingMeHigherAndHigher-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../247.SlyTheFamilyStone-HotFunInTheSummertime-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../248.TheSugarhillGang-RappersDelight-1979.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../249.ArethaFranklin-ChainOfFools-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../250.BlackSabbath-Paranoid-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../251.BobbyDarin-MackTheKnife-1959.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../252.TheDrifters-MoneyHoney-1953.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../253.MottTheHoople-AllTheYoungDudes-1972.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../254.Acdc-HighwayToHell-1979.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../255.Blondie-HeartOfGlass-1978.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../256.Radiohead-ParanoidAndroid-1997.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../257.TheTroggs-WildThing-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../258.TheWho-ICanSeeForMiles-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../259.JeffBuckley-Hallelujah-1994.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../260.TheDells-OhWhatANight-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../261.StevieWonder-HigherGround-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../262.SmokeyRobinson-OooBabyBaby-1965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../263.TheCrystals-HesARebel-1962.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../264.RandyNewman-SailAway-1972.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../265.ArchieBellTheDrells-TightenUp-1968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../266.TheRonettes-WalkingInTheRain-1964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../267.TheNewYorkDolls-PersonalityCrisis-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../268.U2-SundayBloodySunday-1983.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../269.TheModernLovers-Roadrunner-1976.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../270.GeorgeJones-HeStoppedLovingHerToday-1980.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../271.TheBeachBoys-SloopJohnB-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../272.ChuckBerry-SweetLittleSixteen-1958.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../273.TheBeatles-Something-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../274.JeffersonAirplane-SomebodyToLove-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../275.BruceSpringsteen-BornInTheU.s.a.-1984.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../276.TheStapleSingers-IllTakeYouThere-1972.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../277.DavidBowie-ZiggyStardust-1972.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../278.TheCure-PicturesOfYou-1989.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../279.TheDixieCups-ChapelOfLove-1964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../280.BillWithers-AintNoSunshine-1971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../281.StevieWonder-YouAreTheSunshineOfMyLife-1972.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../282.JoniMitchell-HelpMe-1974.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../283.Blondie-CallMe-1980.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../284.ElvisCostelloTheAttractions-whatsSoFunnyboutPeaceLoveAndUnderstanding-1979.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../285.HowlinWolf-SmokestackLightning-1956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../286.Pavement-SummerBabe-1992.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../287.Run-dmc-WalkThisWay-1986.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../288.BarrettStrong-MoneythatsWhatIWant-1960.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../289.TheBeatles-CantBuyMeLove-1964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../290.Eminem-Stan-2000.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../291.TheZombies-ShesNotThere-1964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../292.TheClash-TrainInVain-1979.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../293.AlGreen-TiredOfBeingAlone-1971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../294.LedZeppelin-BlackDog-1971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../295.TheRollingStones-StreetFightingMan-1968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../296.BobMarleyTheWailers-GetUpStandUp-1975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../297.NeilYoung-HeartOfGold-1972.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../298.Blondie-OneWayOrAnother-1978.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../299.Prince-SignoTheTimes-1987.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../300.Madonna-LikeAPrayer-1989.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../301.RodStewart-DoYaThinkImSexy-1978.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../302.WillieNelson-BlueEyesCryingInTheRain-1975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../303.TheRollingStones-RubyTuesday-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../304.TheBeatles-WithALittleHelpFromMyFriends-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../305.JamesBrown-SayItLoud--ImBlackAndProud-1968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../306.TheJam-ThatsEntertainment-1980.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../307.FrankieLymonTheTeenagers-WhyDoFoolsFallInLove-1956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../308.JackieWilson-LonelyTeardrops-1958.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../309.TinaTurner-WhatsLoveGotToDoWithIt-1984.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../310.BlackSabbath-IronMan-1971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../311.TheEverlyBrothers-WakeUpLittleSusie-1957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../312.RoyOrbison-InDreams-1963.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../313.ScreaminJayHawkins-IPutASpellOnYou-1956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../314.PinkFloyd-ComfortablyNumb-1979.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../315.TheAnimals-DontLetMeBeMisunderstood-1965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../316.PinkFloyd-WishYouWereHere-1975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../317.JimmyCliff-ManyRiversToCross-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../318.ElvisCostello-Alison-1977.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../319.AliceCooper-SchoolsOut-1972.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../320.LedZeppelin-Heartbreaker-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../321.NeilYoung-CortezTheKiller-1975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../322.PublicEnemy-FightThePower-1989.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../323.ThePattiSmithGroup-DancingBarefoot-1979.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../324.TheSupremes-BabyLove-1964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../325.TheYoungRascals-GoodLovin-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../326.JamesBrown-GetUpiFeelLikeBeingASexMachine-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../327.JerryButlerTheImpressions-ForYourPreciousLove-1958.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../328.TheDoors-TheEnd-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../329.EarthWindFire-ThatsTheWayOfTheWorld-1975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../330.Queen-WeWillRockYou-1977.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../331.BonnieRaitt-ICantMakeYouLoveMe-1991.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../332.BobDylan-SubterraneanHomesickBlues-1965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../333.NormanGreenbaum-SpiritInTheSky-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../334.TheRollingStones-WildHorses-1971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../335.TheVelvetUnderground-SweetJane-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../336.Aerosmith-WalkThisWay-1976.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../337.MichaelJackson-BeatIt-1982.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../338.PaulMccartney-MaybeImAmazed-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../339.TheSupremes-YouKeepMeHangingOn-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../340.TheWho-BabaOriley-1971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../341.JimmyCliff-TheHarderTheyCome-1975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../342.Dion-RunaroundSue-1961.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../343.LavernBaker-JimDandy-1956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../344.BigBrotherTheHoldingCompany-PieceOfMyHeart-1968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../345.RitchieValens-LaBamba-1958.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../346.Dr.Dre2pac-CaliforniaLove-1996.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../347.EltonJohn-CandleInTheWind-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../348.TheIsleyBrothers-ThatLadyparts1And2-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../349.BenE.King-SpanishHarlem-1960.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../350.LittleEva-TheLoco-motion-1962.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../351.ThePlatters-TheGreatPretender-1955.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../352.ElvisPresley-AllShookUp-1957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../353.EricClapton-TearsInHeaven-1992.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../354.ElvisCostello-WatchingTheDetectives-1977.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../355.CreedenceClearwaterRevival-BadMoonRising-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../356.Eurythmics-SweetDreamsareMadeOfThis-1983.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../357.JimiHendrix-LittleWing-1968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../358.MarthaReevesTheVandellas-NowhereToRun-1965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../359.MuddyWaters-GotMyMojoWorking-1957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../360.RobertaFlack-KillingMeSoftlyWithHisSong-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../361.TheClash-CompleteControl-1979.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../362.TheBeatles-AllYouNeedIsLove-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../363.TheBoxTops-TheLetter-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../364.BobDylan-Highway61Revisited-1965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../365.TheRighteousBrothers-UnchainedMelody-1965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../366.TheBeeGees-HowDeepIsYourLove-1977.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../367.Cream-WhiteRoom-1968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../368.DepecheMode-PersonalJesus-1989.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../369.BoDiddley-ImAMan-1955.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../370.JimiHendrix-TheWindCriesMary-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../371.TheWho-ICantExplain-1965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../372.Television-MarqueeMoon-1977.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../373.SamCooke-WonderfulWorld-1960.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../374.ChuckBerry-BrownEyedHandsomeMan-1956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../375.PinkFloyd-AnotherBrickInTheWallPart2-1979.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../376.Radiohead-FakePlasticTrees-1995.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../377.RayCharles-HitTheRoadJack-1961.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../378.U2-PrideinTheNameOfLove-1984.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../379.Rem-RadioFreeEurope-1983.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../380.EltonJohn-GoodbyeYellowBrickRoad-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../381.AaronNeville-TellItLikeItIs-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../382.TheVerve-BitterSweetSymphony-1997.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../383.TheAllmanBrothersBand-WhippingPost-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../384.TheBeatles-TicketToRide-1965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../385.CrosbyStillsNashYoung-Ohio-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../386.EricB.Rakim-IKnowYouGotSoul-1987.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../387.EltonJohn-TinyDancer-1971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../388.ThePolice-Roxanne-1979.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../389.TheTemptations-JustMyImagination-1971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../390.TheFourTops-BabyINeedYourLoving-1964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../391.FredaPayne-BandOfGold-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../392.TheFiveStairsteps-O-o-hChild-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../393.TheLovinSpoonful-SummerInTheCity-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../394.ElvisPresley-CantHelpFallingInLove-1961.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../395.TheShangri-las-RememberwalkingInTheSand-1964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../396.BigStar-Thirteen-1972.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../397.BlueOysterCult-dontFearTheReaper-1976.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../398.LynyrdSkynyrd-SweetHomeAlabama-1974.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../399.Metallica-EnterSandman-1991.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../400.PaulRevereTheRaiders-Kicks-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../401.TheShirelles-TonightsTheNight-1960.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../402.SlyTheFamilyStone-ThankYoufalettinmeBeMiceElfAgain-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../403.EddieCochran-CmonEverybody-1958.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../404.BobDylan-VisionsOfJohanna-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../405.TheCarpenters-WeveOnlyJustBegun-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../406.R.Kelly-IBelieveICanFly-1996.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../407.Nirvana-InBloom-1991.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../408.Aerosmith-SweetEmotion-1975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../409.Cream-Crossroads-1968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../410.ThePixies-MonkeyGoneToHeaven-1989.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../411.DonnaSummer-IFeelLove-1977.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../412.BobbieGentry-OdeToBillieJoe-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../413.LittleRichard-TheGirlCantHelpIt-1957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../414.TheCoasters-YoungBlood-1957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../415.TheFourTops-ICantHelpMyself-1965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../416.DonHenley-TheBoysOfSummer-1984.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../417.Nwa-FuckThaPolice-1989.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../418.CrosbyStillsNash-SuiteJudyBlueEyes-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../419.Dr.Dre-NuthinButAgThang-1993.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../420.TheIsleyBrothers-ItsYourThing-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../421.BillyJoel-PianoMan-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../422.TheKinks-Lola-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../423.ElvisPresley-BlueSuedeShoes-1956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../424.TheRollingStones-TumblingDice-1972.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../425.TheSmiths-WilliamItWasReallyNothing-1984.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../426.DeepPurple-SmokeOnTheWater-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../427.U2-NewYearsDay-1983.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../428.MitchRyderTheDetroitWheels-DevilWithABlueDressOngoodGollyMissMolly-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../429.SolomonBurke-EverybodyNeedsSomebodyToLove-1964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../430.TheClash-WhiteManInHammersmithPalais-1979.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../431.FatsDomino-AintThatAShame-1955.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../432.GladysKnightThePips-MidnightTrainToGeorgia-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../433.LedZeppelin-RambleOn-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../434.WilsonPickett-MustangSally-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../435.TheRollingStones-BeastOfBurden-1978.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../436.Love-AloneAgainOr-1968.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../437.ElvisPresley-LoveMeTender-1956.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../438.TheStooges-IWannaBeYourDog-1969.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../439.JohnCougarMellencamp-PinkHouses-1983.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../440.Salt-n-pepa-PushIt-1987.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../441.TheDel-vikings-ComeGoWithMe-1957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../442.LittleRichard-KeepAKnockin-1957.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../443.BobMarleyTheWailers-IShotTheSheriff-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../444.SonnyCher-IGotYouBabe-1965.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../445.Nirvana-ComeAsYouAre-1991.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../446.TootsTheMaytals-PressureDrop-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../447.TheShangri-las-LeaderOfThePack-1964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../448.TheVelvetUnderground-Heroin-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../449.TheBeatles-PennyLane-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../450.GlenCampbell-ByTheTimeIGetToPhoenix-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../451.ChubbyChecker-TheTwist-1960.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../452.SamCooke-Cupid-1961.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../453.GunsNRoses-ParadiseCity-1987.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../454.GeorgeHarrison-MySweetLord-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../455.Nirvana-AllApologies-1993.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../456.LloydPrice-StaggerLee-1958.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../457.TheRamones-SheenaIsAPunkRocker-1977.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../458.SamDave-SoulMan-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../459.MuddyWaters-RollinStone-1948.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../460.TheChiffons-OneFineDay-1963.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../461.PrinceTheRevolution-Kiss-1986.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../462.TheStapleSingers-RespectYourself-1971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../463.TheBeatles-Rain-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../464.TheFourTops-StandingInTheShadowsOfLove-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../465.CheapTrick-Surrender-1978.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../466.DelShannon-Runaway-1961.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../467.GunsNRoses-WelcomeToTheJungle-1987.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../468.TheStooges-SearchAndDestroy-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../469.CaroleKing-ItsTooLate-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../470.JoniMitchell-FreeManInParis-1974.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../471.WillieNelson-OnTheRoadAgain-1980.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../472.TheSupremes-WhereDidOurLoveGo-1964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../473.ArethaFranklin-DoRightWomanDoRightMan-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../474.Funkadelic-OneNationUnderAGroove-1978.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../475.BeastieBoys-Sabotage-1994.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../476.Foreigner-IWantToKnowWhatLoveIs-1984.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../477.RickJames-SuperFreak-1981.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../478.JeffersonAirplane-WhiteRabbit-1967.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../479.Labelle-LadyMarmalade-1975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../480.VanMorrison-IntoTheMystic-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../481.DavidBowie-YoungAmericans-1975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../482.AliceCooper-ImEighteen-1971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../483.TheCure-JustLikeHeaven-1987.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../484.JoanJett-ILoveRocknRoll-1982.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../485.PaulSimon-Graceland-1986.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../486.TheSmiths-HowSoonIsNow-1985.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../487.TheDrifters-UnderTheBoardwalk-1964.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../488.FleetwoodMac-RhiannonwillYouEverWin-1975.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../489.GloriaGaynor-IWillSurvive-1978.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../490.TheRollingStones-BrownSugar-1971.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../491.DustySpringfield-YouDontHaveToSayYouLoveMe-1966.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../492.JacksonBrowne-RunningOnEmpty-1977.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../493.TheCrystals-ThenHeKissedMe-1963.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../494.TheEagles-Desperado-1973.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../495.SmokeyRobinsonTheMiracles-ShopAround-1960.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../496.TheRollingStones-MissYou-1978.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../497.Weezer-BuddyHolly-1994.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../498.BrookBenton-RainyNightInGeorgia-1970.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../499.ThinLizzy-TheBoysAreBackInTown-1976.mp3
+https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../500.Boston-MoreThanAFeeling-1976.mp3">
+                    </v-textarea>
+                </v-expand-transition>
+            </v-col>
+        </v-row>
+    </v-container>
+</template>
+
+<script>
+    import { mask } from 'vue-the-mask'
+
+    export default {
+        directives: {
+            mask,
+        },
+        data () {
+            return {
+                expand: false,
+                customMask : {
+                    mask: 'ZX',
+                    tokens: {
+                        'Z': {pattern: /[1-9]/},
+                        'X': {pattern: /[0-9]/}
+                    }
+                },
+                setting : {
+                    interval : 5,
+                    userInterval : 5,
+                },
+                downloadList : null,
+                downloadLoop : null,
+                downloadLine : 0,
+            }
+        },
+        methods: {
+            cancel() {
+                this.setting.interval = 5;
+                this.setting.userInterval = 5;
+            },
+            save() {
+                this.setting.interval = this.setting.userInterval;
+            },
+            download() {
+                for (let i = this.downloadLine; i < 2; i++) {
+                    console.log(this.downloadList);
+                }
+            },
+            stop() {
+                clearInterval(this.downloadLoop);
+            }
+        },
+        mounted : function() {
+            this.downloadList = this.$el.querySelector('#download_list');
+        },
+        name: "rolling-stone-magazines500-greatest-songs-of-all-time.vue"
+    }
+</script>
+
+<style lang="scss" scoped>
+
+</style>

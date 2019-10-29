@@ -39,6 +39,14 @@
             <v-list-item-title>돌려돌려 돌림판</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item @click="moveToLink('/RollingStoneMagazines500GreatestSongsOfAllTime')">
+          <v-list-item-action>
+            <v-icon>mdi-download</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Rolling Stone's 500 Greatest Songs of All Time</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item @click="moveToLink('/playground')">
           <v-list-item-action>
             <v-icon>mdi-test-tube</v-icon>
