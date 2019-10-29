@@ -647,7 +647,10 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                 this.setting.interval = this.setting.userInterval;
             },
             start() {
-                if(this.downloadList.value.split("\n").length == this.currentLine) return false;
+                if(this.downloadList.value.split("\n").length >= this.currentLine) {
+                    this.stop();
+                    return false;
+                }
 
                 this.download(this.downloadList.value.split("\n")[this.currentLine]);
                 this.downloadLoop = setInterval(() => {
@@ -664,7 +667,7 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                 console.log(url);
                 
                 var myRegexp = new RegExp(/[A-Za-z0-9_%:.-\s]+.mp3/, "g");
-                let fileName = myRegexp.exec(url)[0].replace(/\%20/gi, "");
+                let fileName = decodeURI(myRegexp.exec(url)[0]).replace(/\s\s/gi, "");
                 console.log(fileName);
 
                 this.axios({
