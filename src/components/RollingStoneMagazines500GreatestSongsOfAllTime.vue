@@ -12,16 +12,12 @@
                         src="/img/000. Rolling Stone Magazine's 500 Greatest Songs Of All Time1.jpg"
                     ></v-img>
 
-                    <v-list-item>
-                        <v-list-item-content>
-                            <v-list-item-title class="title font-italic font-weight-light">
-                                Rolling Stone Magazine's 500 greatest songs of all time...
-                            </v-list-item-title>
-                            <v-list-item-subtitle class="caption">
-                                ref : <a href="https://archive.org/details/RollingStoneMagazines500GreatestSongsOfAllTime..." target="_blank">https://archive.org</a>
-                            </v-list-item-subtitle>
-                        </v-list-item-content>
-                    </v-list-item>
+                    <v-card-title class="title font-italic font-weight-light">
+                        Rolling Stone Magazine's 500 greatest songs of all time...
+                    </v-card-title>
+                    <v-card-text class="mb-2">
+                        ref : <a href="https://archive.org/details/RollingStoneMagazines500GreatestSongsOfAllTime..." target="_blank">https://archive.org</a>
+                    </v-card-text>
                 </v-card>
             </v-col>
         </v-row>
