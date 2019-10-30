@@ -5,12 +5,21 @@
     >
         <v-row no-gutters>
             <v-col>
-                <v-card
-                    class="mx-auto ma-5"
-                >
+                <v-card class="mx-auto ma-5">
+                    <v-img
+                        class="white--text mx-auto"
+                        width="400"
+                        src="/img/000. Rolling Stone Magazine's 500 Greatest Songs Of All Time1.jpg"
+                    ></v-img>
+
                     <v-list-item>
                         <v-list-item-content>
-                            <v-list-item-title class="title font-italic font-weight-light mb-1">Rolling Stone Magazine's 500 greatest songs of all time...</v-list-item-title>
+                            <v-list-item-title class="title font-italic font-weight-light">
+                                Rolling Stone Magazine's 500 greatest songs of all time...
+                            </v-list-item-title>
+                            <v-list-item-subtitle class="caption">
+                                ref : <a href="https://archive.org/details/RollingStoneMagazines500GreatestSongsOfAllTime..." target="_blank">https://archive.org</a>
+                            </v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
                 </v-card>
@@ -29,7 +38,7 @@
                                 <v-col class="text--secondary">
                                     <v-fade-transition leave-absolute>
                                         <span v-if="open" key="0">
-                                            Default : 5s, Current : {{setting.interval}}s
+                                            Default : 10s / Current : {{setting.interval}}s
                                         </span>
                                         <span v-else key="1">
                                             Time Interval : {{setting.interval}}s
@@ -49,6 +58,17 @@
                                         v-model="setting.userInterval"
                                     ></v-text-field>
                                 </v-col>
+                                <v-divider
+                                        vertical
+                                        class="mx-4"
+                                ></v-divider>
+                                <v-col>
+                                    <v-text-field
+                                            label="Current Line"
+                                            :value="currentLine"
+                                            v-model="currentLine"
+                                    ></v-text-field>
+                                </v-col>
                             </v-row>
 
                             <v-card-actions>
@@ -58,7 +78,7 @@
                                     color="primary"
                                     @click="cancel"
                                 >
-                                    Cancel
+                                    Default
                                 </v-btn>
                                 <v-btn
                                     text
@@ -75,11 +95,40 @@
         </v-row>
 
         <v-row>
+            <v-col>
+                {{ downloadFileName }}
+                <v-progress-linear
+                        :active="active"
+                        :color="progress.color"
+                        v-model="progress.value"
+                        height="25"
+                        reactive
+                >
+                    <strong>{{ progress.value }}%</strong>
+                </v-progress-linear>
+            </v-col>
+        </v-row>
+        <v-row>
             <v-col class="mr-1">
                 <v-btn block color="blue-grey" dark @click="start">Download</v-btn>
             </v-col>
             <v-col class="ml-1">
                 <v-btn block color="deep-orange darken-1" dark @click="stop">Stop</v-btn>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col class="mr-1">
+                <v-alert
+                        border="top"
+                        colored-border
+                        type="info"
+                        elevation="2"
+                >
+                    <ul>
+                        <li>Total File Size : 4.28 GB.</li>
+                        <li>if you use chrome browser, check your <a href="https://support.google.com/chrome/answer/114662" target="_blank">automaticDownloads</a> config.</li>
+                    </ul>
+                </v-alert>
             </v-col>
         </v-row>
 
@@ -615,6 +664,8 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
     /* eslint-disable */
     import { mask } from 'vue-the-mask'
 
+    const DEFAULT_INTERVAL = 10;
+
     export default {
         directives: {
             mask,
@@ -622,6 +673,11 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
         data () {
             return {
                 expand: false,
+                active: false,
+                progress : {
+                    value : 0,
+                    color : "blue darken-2"
+                },
                 customMask : {
                     mask: 'ZX',
                     tokens: {
@@ -630,27 +686,36 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                     }
                 },
                 setting : {
-                    interval : 5,
-                    userInterval : 5,
+                    interval : DEFAULT_INTERVAL,
+                    userInterval : DEFAULT_INTERVAL,
                 },
+                downloadFileName: "",
                 downloadList : null,
                 downloadLoop : null,
+
                 currentLine : 0,
+                maxLine : 0,
             }
         },
         methods: {
+            init() {
+                this.downloadList = this.$el.querySelector('#download_list');
+                this.maxLine = this.downloadList.value.split("\n").length;
+            },
             cancel() {
-                this.setting.interval = 5;
-                this.setting.userInterval = 5;
+                this.setting.interval = DEFAULT_INTERVAL;
+                this.setting.userInterval = DEFAULT_INTERVAL;
             },
             save() {
                 this.setting.interval = this.setting.userInterval;
             },
             start() {
-                if(this.downloadList.value.split("\n").length >= this.currentLine) {
+                if(this.currentLine >= this.maxLine) {
                     this.stop();
                     return false;
                 }
+
+                if(this.progress.color === "red darken-2") this.progress.color = "blue darken-2";
 
                 this.download(this.downloadList.value.split("\n")[this.currentLine]);
                 this.downloadLoop = setInterval(() => {
@@ -660,15 +725,19 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
             },
             stop() {
                 clearInterval(this.downloadLoop);
-                console.log("stop : ", this.currentLine+1);
+                this.progress.color = "red darken-2";
+                // console.log("stop : ", this.currentLine+1);
             },
             download(url) {
-                console.log("download Line : ", this.currentLine+1);
-                console.log(url);
+                // console.log("download Line : ", this.currentLine+1);
+                // console.log(url);
+
+                this.active = true;
+                this.progress.value = Math.ceil((this.currentLine / this.maxLine) * 100);
                 
-                var myRegexp = new RegExp(/[A-Za-z0-9_%:.-\s]+.mp3/, "g");
-                let fileName = decodeURI(myRegexp.exec(url)[0]).replace(/\s\s/gi, "");
-                console.log(fileName);
+                let regex = new RegExp(/[A-Za-z0-9_%:.-\s]+.mp3/, "g");
+                let fileName = decodeURI(regex.exec(url)[0]).replace(/\s\s/gi, "");
+                this.downloadFileName = fileName;
 
                 this.axios({
                   url: url,
@@ -685,7 +754,7 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
             }
         },
         mounted : function() {
-            this.downloadList = this.$el.querySelector('#download_list');
+            this.init();
         },
         name: "rolling-stone-magazines500-greatest-songs-of-all-time.vue"
     }
