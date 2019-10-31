@@ -52,6 +52,7 @@
                                         v-mask="customMask"
                                         value="3"
                                         v-model="setting.userInterval"
+                                        :rules="setting.rules"
                                     ></v-text-field>
                                 </v-col>
                                 <v-divider
@@ -61,8 +62,9 @@
                                 <v-col>
                                     <v-text-field
                                             label="Current Line"
-                                            :value="currentLine"
-                                            v-model="currentLine"
+                                            :value="line.current"
+                                            v-model="line.current"
+                                            :rules="line.rules"
                                     ></v-text-field>
                                 </v-col>
                             </v-row>
@@ -92,7 +94,7 @@
 
         <v-row>
             <v-col>
-                {{ downloadFileName }}
+                {{ down.fileName }}
                 <v-progress-linear
                         :active="active"
                         :color="progress.color"
@@ -686,19 +688,30 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                 setting : {
                     interval : DEFAULT_INTERVAL,
                     userInterval : DEFAULT_INTERVAL,
+                    rules : [
+                        v => v >= 3 || 'Interval value must be more than 3',
+                    ],
                 },
-                downloadFileName: "",
-                downloadList : null,
-                downloadLoop : null,
 
-                currentLine : 0,
-                maxLine : 0,
+                down : {
+                    fileName: "",
+                    list: null,
+                    loop: null,
+                },
+
+                line : {
+                    current: 0,
+                    rules : [
+                        v => v >= 0 || 'line value must be more than 0',
+                    ],
+                    max: 0,
+                }
             }
         },
         methods: {
             init() {
-                this.downloadList = this.$el.querySelector('#download_list');
-                this.maxLine = this.downloadList.value.split("\n").length;
+                this.down.list = this.$el.querySelector('#download_list');
+                this.line.max = this.down.list.value.split("\n").length;
 
                 this.expand = false;
                 this.active = false;
@@ -706,8 +719,8 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                 this.setting.interval = DEFAULT_INTERVAL;
                 this.setting.userInterval = DEFAULT_INTERVAL;
 
-                this.currentLine = 0;
-                this.downloadFileName = null;
+                this.line.current = 0;
+                this.down.fileName = null;
             },
             cancel() {
                 this.setting.interval = DEFAULT_INTERVAL;
@@ -717,51 +730,52 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                 this.setting.interval = this.setting.userInterval;
             },
             start() {
-                if(this.currentLine >= this.maxLine) {
+                if(this.line.current >= this.line.max) {
                     this.stop();
                     return false;
                 }
 
+                this.active = true;
                 if(this.progress.start === false) {
                     this.progress.start = true;
                     this.progress.color = "blue darken-2";
                 }
 
-                this.download(this.downloadList.value.split("\n")[this.currentLine]);
-                this.downloadLoop = setInterval(() => {
-                    this.currentLine++;
-                    this.download(this.downloadList.value.split("\n")[this.currentLine]);
+                this.download(this.down.list.value.split("\n")[this.line.current]);
+                this.down.loop = setInterval(() => {
+                    this.line.current++;
+                    this.download(this.down.list.value.split("\n")[this.line.current]);
                 },this.setting.interval * 1000);
             },
             stop() {
-                clearInterval(this.downloadLoop);
+                clearInterval(this.down.loop);
                 this.progress.start = false;
                 this.progress.color = "red darken-2";
-                // console.log("stop : ", this.currentLine+1);
+                // console.log("stop : ", this.line.current+1);
             },
             download(url) {
-                // console.log("download Line : ", this.currentLine+1);
+                // console.log("download Line : ", this.line.current+1);
                 // console.log(url);
 
                 this.active = true;
-                this.progress.value = Math.ceil((this.currentLine / this.maxLine) * 100);
+                this.progress.value = Math.ceil((this.line.current / this.line.max) * 100);
                 
                 let regex = new RegExp(/[A-Za-z0-9_%:.-\s]+.mp3/, "g");
                 let fileName = decodeURI(regex.exec(url)[0]).replace(/\s\s/gi, "");
-                this.downloadFileName = fileName;
+                this.down.fileName = fileName;
 
-                // this.axios({
-                //   url: url,
-                //     method: 'GET',
-                //     responseType: 'blob', // important
-                // }).then((response) => {
-                //     const url = window.URL.createObjectURL(new Blob([response.data]));
-                //     const link = document.createElement('a');
-                //     link.href = url;
-                //     link.setAttribute('download', fileName); //or any other extension
-                //     document.body.appendChild(link);
-                //     link.click();
-                // });
+                this.axios({
+                  url: url,
+                    method: 'GET',
+                    responseType: 'blob', // important
+                }).then((response) => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', fileName); //or any other extension
+                    document.body.appendChild(link);
+                    link.click();
+                });
             }
         },
         mounted : function() {
