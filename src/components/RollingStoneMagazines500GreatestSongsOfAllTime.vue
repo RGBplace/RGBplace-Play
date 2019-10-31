@@ -5,9 +5,9 @@
     >
         <v-row no-gutters>
             <v-col>
-                <v-card class="mx-auto ma-5">
+                <v-card class="mx-auto ma-5 pt-12">
                     <v-img
-                        class="white--text mx-auto"
+                        class="white--text mx-auto my-auto"
                         width="400"
                         src="/img/000. Rolling Stone Magazine's 500 Greatest Songs Of All Time1.jpg"
                     ></v-img>
@@ -109,7 +109,8 @@
                 <v-btn block color="blue-grey" dark @click="start">Download</v-btn>
             </v-col>
             <v-col class="ml-1">
-                <v-btn block color="deep-orange darken-1" dark @click="stop">Stop</v-btn>
+                <v-btn block color="deep-orange darken-1" dark v-if="progress.start" @click="stop">Stop</v-btn>
+                <v-btn block color="deep-orange darken-1" dark v-else @click="init">Initialize</v-btn>
             </v-col>
         </v-row>
         <v-row>
@@ -671,6 +672,7 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                 expand: false,
                 active: false,
                 progress : {
+                    start : false,
                     value : 0,
                     color : "blue darken-2"
                 },
@@ -697,6 +699,15 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
             init() {
                 this.downloadList = this.$el.querySelector('#download_list');
                 this.maxLine = this.downloadList.value.split("\n").length;
+
+                this.expand = false;
+                this.active = false;
+                this.progress.value = 0;
+                this.setting.interval = DEFAULT_INTERVAL;
+                this.setting.userInterval = DEFAULT_INTERVAL;
+
+                this.currentLine = 0;
+                this.downloadFileName = null;
             },
             cancel() {
                 this.setting.interval = DEFAULT_INTERVAL;
@@ -711,7 +722,10 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                     return false;
                 }
 
-                if(this.progress.color === "red darken-2") this.progress.color = "blue darken-2";
+                if(this.progress.start === false) {
+                    this.progress.start = true;
+                    this.progress.color = "blue darken-2";
+                }
 
                 this.download(this.downloadList.value.split("\n")[this.currentLine]);
                 this.downloadLoop = setInterval(() => {
@@ -721,6 +735,7 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
             },
             stop() {
                 clearInterval(this.downloadLoop);
+                this.progress.start = false;
                 this.progress.color = "red darken-2";
                 // console.log("stop : ", this.currentLine+1);
             },
@@ -735,18 +750,18 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                 let fileName = decodeURI(regex.exec(url)[0]).replace(/\s\s/gi, "");
                 this.downloadFileName = fileName;
 
-                this.axios({
-                  url: url,
-                    method: 'GET',
-                    responseType: 'blob', // important
-                }).then((response) => {
-                    const url = window.URL.createObjectURL(new Blob([response.data]));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', fileName); //or any other extension
-                    document.body.appendChild(link);
-                    link.click();
-                });
+                // this.axios({
+                //   url: url,
+                //     method: 'GET',
+                //     responseType: 'blob', // important
+                // }).then((response) => {
+                //     const url = window.URL.createObjectURL(new Blob([response.data]));
+                //     const link = document.createElement('a');
+                //     link.href = url;
+                //     link.setAttribute('download', fileName); //or any other extension
+                //     document.body.appendChild(link);
+                //     link.click();
+                // });
             }
         },
         mounted : function() {
