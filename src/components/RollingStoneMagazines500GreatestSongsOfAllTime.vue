@@ -52,6 +52,7 @@
                                         v-mask="customMask"
                                         value="3"
                                         v-model="setting.userInterval"
+                                        :disabled="progress.start"
                                         :rules="setting.rules"
                                     ></v-text-field>
                                 </v-col>
