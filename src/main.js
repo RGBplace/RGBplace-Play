@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import VueKonva from 'vue-konva'
  
 import App from './App.vue'
 import router from './router'
@@ -17,7 +18,7 @@ router.beforeEach((to, from, next) => {
     next()
 })
 
-Vue.use(VueAxios, axios);
+Vue.use(axios, VueAxios, VueKonva);
 
 new Vue({
   router,
