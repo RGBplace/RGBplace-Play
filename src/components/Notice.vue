@@ -22,10 +22,10 @@
         <v-card
                 class="mx-auto ma-1"
         >
-          <v-subheader>2019/10/30</v-subheader>
-          <v-card-title class="subtitle-1">롤링 스톤 역사상 가장 위대한 노래 500곡</v-card-title>
+          <v-subheader>2019/11/25 ~ </v-subheader>
+          <v-card-title class="subtitle-1">도신의 주사위 (Gambler's Dice)</v-card-title>
           <v-card-text class="mb-2">
-            - 500 곡을 자동으로 다운로드 하는 페이지.
+            - 원하는 결과를 노출시키는 주사위 사이트.
           </v-card-text>
         </v-card>
       </v-col>
@@ -36,11 +36,10 @@
         <v-card
                 class="mx-auto ma-1"
         >
-          <v-subheader>2019/10/15</v-subheader>
-          <v-card-title class="subtitle-1">'돌려돌려 돌림판' 메뉴 추가</v-card-title>
+          <v-subheader>2019/10/30</v-subheader>
+          <v-card-title class="subtitle-1">롤링 스톤 역사상 가장 위대한 노래 500곡</v-card-title>
           <v-card-text class="mb-2">
-            <div>- canvas 활용</div>
-            <div>- 추가 개발 필요. (KonvaJS 활용 예정)</div>
+            - 500 곡을 자동으로 다운로드 하는 페이지.
           </v-card-text>
         </v-card>
       </v-col>
