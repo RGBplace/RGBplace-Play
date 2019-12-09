@@ -18,7 +18,7 @@ router.beforeEach((to, from, next) => {
     next()
 })
 
-Vue.use(axios, VueAxios, VueKonva);
+Vue.use(VueAxios, axios, VueKonva);
 
 new Vue({
   router,
