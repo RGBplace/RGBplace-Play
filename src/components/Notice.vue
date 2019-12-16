@@ -22,10 +22,11 @@
         <v-card
                 class="mx-auto ma-1"
         >
-          <v-subheader>2019/11/25 ~ </v-subheader>
-          <v-card-title class="subtitle-1">도신의 주사위 (Gambler's Dice)</v-card-title>
+          <v-subheader>2019/12/16</v-subheader>
+          <v-card-title class="subtitle-1">진행해야될 프로젝트</v-card-title>
           <v-card-text class="mb-2">
-            - 원하는 결과를 노출시키는 주사위 사이트.
+            1. 도신의 주사위 (Gambler's Dice) : 주사위 조작하기<br/>
+            2. 나라 수도 이름 맞추기 : 벼락치기 공부법을 위한 퀴즈<br/>
           </v-card-text>
         </v-card>
       </v-col>
