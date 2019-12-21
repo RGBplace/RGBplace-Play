@@ -761,7 +761,7 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                 this.active = true;
                 this.progress.value = Math.ceil((this.line.current / this.line.max) * 100);
                 
-                let regex = new RegExp(/[A-Za-z0-9_%:.-\s]+.mp3/, "g");
+                let regex = new RegExp(/[^/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))/, "g");
                 let fileName = decodeURI(regex.exec(url)[0]).replace(/\s\s/gi, "");
                 this.down.fileName = fileName;
 
