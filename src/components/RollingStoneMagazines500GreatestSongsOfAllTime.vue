@@ -109,11 +109,11 @@
         </v-row>
         <v-row>
             <v-col class="mr-1">
-                <v-btn block color="blue-grey" dark @click="start">Download</v-btn>
+                <v-btn block color="blue-grey" dark @click="start">{{ down.state }}</v-btn>
             </v-col>
             <v-col class="ml-1">
                 <v-btn block color="deep-orange darken-1" dark v-if="progress.start" @click="stop">Stop</v-btn>
-                <v-btn block color="deep-orange darken-1" dark v-else @click="init">Initialize</v-btn>
+                <v-btn block color="teal darken-1" dark v-else @click="init">Initialize (Set List)</v-btn>
             </v-col>
         </v-row>
         <v-row>
@@ -671,6 +671,7 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
             mask,
         },
         data () {
+            // MARK: data
             return {
                 expand: false,
                 active: false,
@@ -695,6 +696,7 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                 },
 
                 down : {
+                    state : "Download",
                     fileName: "",
                     list: null,
                     loop: null,
@@ -710,10 +712,13 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
             }
         },
         methods: {
-            init() {
+            getList() {
                 this.down.list = this.$el.querySelector('#download_list');
                 this.line.max = this.down.list.value.split("\n").length;
-
+            },
+            init() {
+                this.getList();
+                this.down.state = 'Download';
                 this.expand = false;
                 this.active = false;
                 this.progress.value = 0;
@@ -722,6 +727,8 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
 
                 this.line.current = 0;
                 this.down.fileName = null;
+
+                clearInterval(this.down.loop);
             },
             cancel() {
                 this.setting.interval = DEFAULT_INTERVAL;
@@ -731,11 +738,7 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                 this.setting.interval = this.setting.userInterval;
             },
             start() {
-                if(this.line.current >= this.line.max) {
-                    this.stop();
-                    return false;
-                }
-
+                this.down.state = 'Working..';
                 this.active = true;
                 if(this.progress.start === false) {
                     this.progress.start = true;
@@ -743,27 +746,48 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                 }
 
                 this.download(this.down.list.value.split("\n")[this.line.current]);
+                clearInterval(this.down.loop);
                 this.down.loop = setInterval(() => {
                     this.line.current++;
+                    if(this.line.current >= this.line.max) {
+                        this.finish();
+                        return false;
+                    }
                     this.download(this.down.list.value.split("\n")[this.line.current]);
                 },this.setting.interval * 1000);
             },
             stop() {
                 clearInterval(this.down.loop);
+                this.down.state = 'Resume';
                 this.progress.start = false;
                 this.progress.color = "red darken-2";
-                // console.log("stop : ", this.line.current+1);
+            },
+            finish() {
+                clearInterval(this.down.loop);
+                this.down.state = 'Done!';
+                this.progress.value = 100;
+                this.progress.start = false;
+                this.progress.color = "green darken-1";
             },
             download(url) {
-                // console.log("download Line : ", this.line.current+1);
-                // console.log(url);
-
                 this.active = true;
                 this.progress.value = Math.ceil((this.line.current / this.line.max) * 100);
                 
-                let regex = new RegExp(/[^/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))/, "g");
-                let fileName = decodeURI(regex.exec(url)[0]).replace(/\s\s/gi, "");
-                this.down.fileName = fileName;
+                let fileName = '';
+
+                try {
+                    let regex = new RegExp(/[^/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))/, "g");
+                    fileName = decodeURI(regex.exec(url)[0]).replace(/\s\s/gi, "");
+                } catch (e) {
+                    fileName = '';
+                }
+
+                if (fileName) {
+                    this.down.fileName = fileName;
+                } else {
+                    this.down.fileName = 'unknown (skip)';
+                    return false;
+                }                
 
                 this.axios({
                   url: url,
