@@ -738,6 +738,10 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
                 this.setting.interval = this.setting.userInterval;
             },
             start() {
+                if(this.progress.value >= 100) {
+                    this.init();
+                }
+
                 this.down.state = 'Working..';
                 this.active = true;
                 if(this.progress.start === false) {
@@ -771,7 +775,7 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
             },
             download(url) {
                 this.active = true;
-                this.progress.value = Math.ceil((this.line.current / this.line.max) * 100);
+                this.progress.value = Math.floor((this.line.current / this.line.max) * 100);
                 
                 let fileName = '';
 
