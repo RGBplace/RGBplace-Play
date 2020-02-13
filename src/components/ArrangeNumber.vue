@@ -31,8 +31,6 @@
         :vertical-compact="true"
         :margin="[10, 10]"
         :use-css-transforms="true"
-        @layout-created="layoutCreatedEvent"
-        @layout-updated="layoutUpdatedEvent"
       >
         <grid-item
           v-for="(item, index) in layout"
@@ -52,6 +50,9 @@
   </div>
 </template>
 <script>
+  // grid-layout event
+  // @layout-created="layoutCreatedEvent"
+  // @layout-updated="layoutUpdatedEvent"
 import VueGridLayout from "vue-grid-layout";
 
 let answerLayout = [];

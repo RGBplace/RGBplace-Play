@@ -125,8 +125,9 @@
                         elevation="2"
                 >
                     <ul>
+                        <li>When you click the button, start download on background. It may look like stopped, but it's working.</li>
                         <li>Total File Size : 4.28 GB.</li>
-                        <li>if you use chrome browser, check your <a href="https://support.google.com/chrome/answer/114662" target="_blank">automaticDownloads</a> config.</li>
+                        <li>If you use chrome browser, check your <a href="https://support.google.com/chrome/answer/114662" target="_blank">automaticDownloads</a> config.</li>
                     </ul>
                 </v-alert>
             </v-col>
@@ -775,7 +776,7 @@ https://archive.org/download/RollingStoneMagazines500GreatestSongsOfAllTime.../5
             },
             download(url) {
                 this.active = true;
-                this.progress.value = Math.floor((this.line.current / this.line.max) * 100);
+                this.progress.value = ((this.line.current / this.line.max) * 100).toFixed(1);
                 
                 let fileName = '';
 
